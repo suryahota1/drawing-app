@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+    <head>
+        <title>Smaple drawing application</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1">
+        <meta name="keywords" content="HTML, CSS, canvas">
+        <meta name="description" content="A sample application for drawing complex figures">
+    </head>
+    <body>
+        <main>
+            <canvas id="canvas" width="700" height="700" style="border: 1px solid red;"></canvas>
+            <canvas id="earth" width="400" height="400" style="border: 1px solid red;"></canvas>
+        </main>
+        <script>
+            // const canvas = document.getElementById("canvas");
+            // const context = canvas.getContext("2d");
+
+            // context.fillStyle ="#FFDD00";
+            // context.fillRect(0, 0, 200, 150);
+
+            // context.beginPath();
+            // context.moveTo(270, 170);
+            // context.lineTo(350, 250);
+            // // context.lineWidth = 10;
+            // // context.strokeStyle = "red";
+            // // context.lineCap = "round";
+            // context.closePath();
+            // context.stroke();
+
+            // context.beginPath();
+            // context.arc(150, 300, 50, 0, Math.PI);
+            // context.stroke();
+
+            // context.beginPath();
+            // context.moveTo(430, 430);
+            // context.lineTo(500, 500);
+            // context.lineTo(400, 500);
+            // context.lineTo(430, 430);
+
+            // // context.moveTo(100,20);
+            // // context.lineTo(175,100);
+            // // context.lineTo(20,100);
+            // // context.lineTo(100,20);
+
+            // context.stroke();
+
+            let prevPos = [200, 50];
+            let raFId;
+            let count = 0;
+            let prevRot = Math.PI / 3600;
+            const canvas = document.getElementById("earth");
+            canvas.addEventListener("mouseover", rotateEarth);
+            canvas.addEventListener("mouseout", () => {
+                window.cancelAnimationFrame(raFId);
+            })
+
+            function rotateEarth () {
+                
+                if ( !canvas.getContext ) return;
+
+                const context = canvas.getContext("2d");
+                context.clearRect(0, 0, 400, 400); 
+
+                // Sun
+                context.beginPath();
+                context.arc(200, 200, 50, 0, 2 * Math.PI, true);
+                context.fillStyle = "rgb(255, 222, 59)";
+                context.fill();
+                context.closePath();
+                context.moveTo(350, 200);
+                context.strokeStyle = "rgb(0, 0, 255)";
+                context.arc(200, 200, 150, 0, 2 * Math.PI);
+                context.stroke();
+                context.closePath();
+
+                // Earth
+                const earthRadius = 20;
+
+                context.beginPath();
+                context.arc(prevPos[0], prevPos[1], 20, 0, 2 * Math.PI, true);
+                context.fillStyle = "rgb(0, 0, 255)";
+                context.fill();
+                context.closePath();
+
+                const rotation = prevRot + (Math.PI / 3600);
+                const pos = [150 * Math.sin(rotation), 150 - 150 * Math.cos(rotation)];
+                console.log(pos);
+                prevPos = [prevPos[0] + pos[0], prevPos[1] + pos[1]];
+                raFId = window.requestAnimationFrame(rotateEarth);
+            }
+
+            function draw () {
+                const canvas = document.getElementById("canvas");
+                if ( !canvas.getContext ) return;
+                const context = canvas.getContext("2d");
+
+                context.fillStyle = "rgb(200 0 0)";
+                context.fillRect(20, 20, 50, 50);
+
+                context.fillStyle = "rgb(0 0 200 / 50%)";
+                context.fillRect(40, 40, 50, 50);
+
+                context.fillStyle = "rgb(0 150 200)";
+                context.fillRect(100, 100, 100, 100);
+                context.clearRect(115, 115, 70, 70);
+                context.strokeRect(125, 125, 50, 50);
+
+                const radius = 25;
+                const gap = 80;
+                context.beginPath();
+                for ( let i = 0; i < 4; i++ ) {
+                    const center = [200, 200 + gap * i];
+                    for ( let j = 0; j < 4; j++ ) {
+                        const counterClockWise = (i + j) % 2 === 0;
+                        const endAngle = 1 + Math.random() * Math.PI;
+                        context.moveTo(center[0] + j * gap, center[1]);
+                        context.arc(center[0] + j * gap, center[1], radius, 0, endAngle, counterClockWise);
+
+                        if (i < 2 ) context.stroke();
+                        else context.fill();
+                    }
+                }
+            }
+            // window.addEventListener("load", rotateEarth);
+        </script>
+    </body>
+</html>
